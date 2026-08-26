@@ -5,7 +5,21 @@ import java.util.Scanner;
 public class tracker {
     public static void main(String[] args) {
 
-        String product_code = "BNS";
+
+        String product_code = "";
+        boolean validCode = false;
+
+        while (!validCode) {
+            System.out.print("Product code (MZE/BNS/POT/TEA) : ");
+            Scanner input = new Scanner(System.in);
+            String code = input.nextLine().trim();
+            if (code.equals("MZE") || code.equals("BNS") || code.equals("POT") || code.equals("TEA")) {
+                product_code = code;
+                validCode = true;
+            } else {
+                System.out.println("Produce code must be MZE, BNS, POT or TEA. Please try again.");
+            }
+        }
         float massKg = 236;
         int qualityScore = 0;
         boolean validScore = false;
