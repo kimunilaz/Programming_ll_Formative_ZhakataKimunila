@@ -1,11 +1,30 @@
 package mu.rekolt.app;
 
+import java.util.Scanner;
+
 public class tracker {
     public static void main(String[] args) {
 
         String product_code = "BNS";
         float massKg = 236;
-        int qualityScore = 91;
+        int qualityScore = 0;
+        boolean validScore = false;
+
+        while (!validScore) {
+            System.out.print("Quality score (0-100) : ");
+            Scanner input = new Scanner(System.in);
+            String score = input.nextLine();
+            try {
+                qualityScore = Integer.parseInt(score);
+                if (qualityScore >= 0 && qualityScore <= 100) {
+                    validScore = true;
+                } else {
+                    System.out.println("Quality score must be between 0 and 100. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("That's not a whole number. Please try again.");
+            }
+        }
 
 
         double unitPrice;
