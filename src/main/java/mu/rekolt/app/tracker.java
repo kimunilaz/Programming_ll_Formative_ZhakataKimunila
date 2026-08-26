@@ -5,6 +5,23 @@ import java.util.Scanner;
 public class tracker {
     public static void main(String[] args) {
 
+        String memberId = "";
+        boolean validId = false;
+
+        while (!validId) {
+            System.out.print("Member identifier : ");
+            Scanner input = new Scanner(System.in);
+            String member = input.nextLine();
+
+            if (member.matches("M-\\d{4}")) {
+                memberId = member;
+                validId = true;
+            } else {
+                System.out.println("Member identifier must be in the form M-0000. Please try again.");
+            }
+        }
+
+
 
         String product_code = "";
         boolean validCode = false;
