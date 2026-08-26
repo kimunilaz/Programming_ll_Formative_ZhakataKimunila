@@ -3,6 +3,27 @@ package mu.rekolt.app;
 import java.util.Scanner;
 
 public class tracker {
+
+    public static double promptMass() {
+        double massKg = 0;
+        boolean validMass = false;
+        while (!validMass) {
+            System.out.print("Mass in kg : ");
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.nextLine();
+            try {
+                massKg = Double.parseDouble(input);
+                if (massKg > 0 && massKg <= 5000) {
+                    validMass = true;
+                } else {
+                    System.out.println("Mass must be above 0 and not more than 5000. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("That's not a number. Please try again.");
+            }
+        }
+        return massKg;
+    }
     public static void main(String[] args) {
 
         String memberId = "";
@@ -58,7 +79,8 @@ public class tracker {
                 System.out.println("Produce code must be MZE, BNS, POT or TEA. Please try again.");
             }
         }
-        float massKg = 236;
+        //float massKg = 236;
+        double massKg = promptMass();
         int qualityScore = 0;
         boolean validScore = false;
 
