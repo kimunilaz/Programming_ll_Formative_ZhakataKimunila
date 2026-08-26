@@ -21,6 +21,27 @@ public class tracker {
             }
         }
 
+        int week = 0;
+        boolean validWeek = false;
+
+        while (!validWeek) {
+            System.out.print("Week of delivery (1-20) : ");
+            Scanner input = new Scanner(System.in);
+            String Input = input.nextLine();
+            try {
+                week = Integer.parseInt(Input);
+                if (week >= 1 && week <= 20) {
+                    validWeek = true;
+                } else {
+                    System.out.println("Week must be between 1 and 20. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("That's not a whole number. Please try again.");
+            }
+        }
+
+
+
 
 
         String product_code = "";
