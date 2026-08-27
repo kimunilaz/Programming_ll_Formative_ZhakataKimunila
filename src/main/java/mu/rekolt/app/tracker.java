@@ -109,19 +109,13 @@ public class tracker {
 
         return qualityScore;
     }
-    public static void main(String[] args) {
 
-
-
-        //calling functions
-        //float massKg = 236;
+    public static void recordDelivery() {
+        //calling methods
         String product_code = Product_Code();
         double massKg = promptMass();
         String member_Id = MemberId();
         int score = Score();
-
-
-
 
         double unitPrice;
         double categoryMultiplier;
@@ -181,5 +175,10 @@ public class tracker {
         System.out.printf("Graded value %.2f%n", gradedValue);
         System.out.printf("Category value %.2f%n", categoryValue);
         System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
+
+    }
+    public static void main(String[] args) {
+        recordDelivery();
+
     }
 }
