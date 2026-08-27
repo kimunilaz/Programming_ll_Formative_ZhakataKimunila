@@ -178,7 +178,37 @@ public class tracker {
 
     }
     public static void main(String[] args) {
-        recordDelivery();
+
+        boolean running = true;
+        Scanner scanner = new Scanner(System.in);
+
+        //session loop
+
+        while (running) {
+            System.out.println();
+            System.out.println("REKOLT PRODUCE TRACKER");
+            System.out.println("1. Record a delivery ");
+            System.out.println("2. Exit");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+//here the switch calls the method associated with the choice of the user
+            switch (choice) {
+                case "1":
+                    recordDelivery();
+                    break;
+
+                case "2":
+                    running = false;
+                    System.out.println("Exiting Session");
+                    break;
+                default:
+                    System.out.println("Please choose 1, or 2.");
+                    break;
+            }
+        }
+
+
 
     }
 }
