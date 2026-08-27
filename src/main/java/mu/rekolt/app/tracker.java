@@ -87,6 +87,28 @@ public class tracker {
 
         return product_code;
     }
+
+    public static int Score() {
+
+        int qualityScore = 0;
+        boolean validScore = false;
+
+        while (!validScore) {
+            System.out.print("Quality score (0-100) : ");
+            Scanner input = new Scanner(System.in);
+            String score = input.nextLine();
+            qualityScore = Integer.parseInt(score);
+            if (qualityScore >= 0 && qualityScore <= 100) {
+                validScore = true;
+                } else {
+                    System.out.println("Quality score must be between 0 and 100. Please try again.");
+                }
+
+        }
+
+
+        return qualityScore;
+    }
     public static void main(String[] args) {
 
 
@@ -96,24 +118,9 @@ public class tracker {
         String product_code = Product_Code();
         double massKg = promptMass();
         String member_Id = MemberId();
-        int qualityScore = 0;
-        boolean validScore = false;
+        int score = Score();
 
-        while (!validScore) {
-            System.out.print("Quality score (0-100) : ");
-            Scanner input = new Scanner(System.in);
-            String score = input.nextLine();
-            try {
-                qualityScore = Integer.parseInt(score);
-                if (qualityScore >= 0 && qualityScore <= 100) {
-                    validScore = true;
-                } else {
-                    System.out.println("Quality score must be between 0 and 100. Please try again.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("That's not a whole number. Please try again.");
-            }
-        }
+
 
 
         double unitPrice;
@@ -142,13 +149,13 @@ public class tracker {
 
         double gradeMultiplier;
         String gradeLabel;
-        if (qualityScore >= 85) {
+        if (score >= 85) {
             gradeMultiplier = 1.15;
             gradeLabel = "A";
-        } else if (qualityScore >= 70) {
+        } else if (score >= 70) {
             gradeMultiplier = 1.00;
             gradeLabel = "B";
-        } else if (qualityScore >= 50) {
+        } else if (score >= 50) {
             gradeMultiplier = 0.85;
             gradeLabel = "C";
         } else {
