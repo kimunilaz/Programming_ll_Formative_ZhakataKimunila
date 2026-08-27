@@ -24,7 +24,8 @@ public class tracker {
         }
         return massKg;
     }
-    public static void main(String[] args) {
+
+    public static String MemberId() {
 
         String memberId = "";
         boolean validId = false;
@@ -41,29 +42,9 @@ public class tracker {
                 System.out.println("Member identifier must be in the form M-0000. Please try again.");
             }
         }
-
-        int week = 0;
-        boolean validWeek = false;
-
-        while (!validWeek) {
-            System.out.print("Week of delivery (1-20) : ");
-            Scanner input = new Scanner(System.in);
-            String Input = input.nextLine();
-            try {
-                week = Integer.parseInt(Input);
-                if (week >= 1 && week <= 20) {
-                    validWeek = true;
-                } else {
-                    System.out.println("Week must be between 1 and 20. Please try again.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("That's not a whole number. Please try again.");
-            }
-        }
-
-
-
-
+        return memberId;
+    }
+    public static void main(String[] args) {
 
         String product_code = "";
         boolean validCode = false;
@@ -79,8 +60,11 @@ public class tracker {
                 System.out.println("Produce code must be MZE, BNS, POT or TEA. Please try again.");
             }
         }
+
+        //calling functions
         //float massKg = 236;
         double massKg = promptMass();
+        String member_Id = MemberId();
         int qualityScore = 0;
         boolean validScore = false;
 
