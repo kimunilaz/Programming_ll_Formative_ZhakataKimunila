@@ -2,6 +2,9 @@ package mu.rekolt.app;
 
 import java.util.Scanner;
 
+import static java.lang.IO.print;
+
+
 public class tracker {
 
     public static double promptMass() {
@@ -110,12 +113,23 @@ public class tracker {
         return qualityScore;
     }
 
-    public static void recordDelivery() {
+
+
+    public static void recordDelivery(double[][] weeklyGrid) {
+
+
+
+
+
         //calling methods
         String product_code = Product_Code();
         double massKg = promptMass();
         String member_Id = MemberId();
         int score = Score();
+        int week = Week();
+
+        int column = produceColumnIndex(product_code);
+        weeklyGrid[week][column] += massKg;
 
         double unitPrice;
         double categoryMultiplier;
@@ -177,10 +191,59 @@ public class tracker {
         System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
 
     }
+
+    public static int produceColumnIndex(String product_code) {
+        switch (product_code) {
+            case "MZE":
+                return 0;
+            case "BNS":
+                return 1;
+            case "POT":
+                return 2;
+            case "TEA":
+                return 3;
+            default:
+                throw new IllegalArgumentException("Unknown produce code: " + product_code);
+        }
+
+    }
+
+
+    public static void printWeeklyGrid(double[][] weeklyGrid) {
+        System.out.println("Weekly volume grid (kg)");
+        System.out.println("Week    MZE     BNS     POT     TEA     Total");
+        for (int week = 1; week <= 20; week++) {
+            double weekTotal = 0;
+            for (int col = 0; col < 4; col++) {
+                weekTotal += weeklyGrid[week][col];
+            }
+            if (weekTotal > 0) {
+                System.out.printf("%-8d%-8.1f%-8.1f%-8.1f%-8.1f%-8.1f%n",
+                        week, weeklyGrid[week][0], weeklyGrid[week][1],
+                        weeklyGrid[week][2], weeklyGrid[week][3], weekTotal);
+            }
+        }
+    }
+
+    public static void printWeeklyGrid(double[][] weeklyGrid, int singleWeek) {
+        System.out.println("Weekly volume grid (kg) — week " + singleWeek);
+        double weekTotal = 0;
+        for (int col = 0; col < 4; col++) {
+            weekTotal += weeklyGrid[singleWeek][col];
+        }
+        System.out.printf("MZE %.1f  BNS %.1f  POT %.1f  TEA %.1f  Total %.1f%n",
+                weeklyGrid[singleWeek][0], weeklyGrid[singleWeek][1],
+                weeklyGrid[singleWeek][2], weeklyGrid[singleWeek][3], weekTotal);
+
+        }
+
     public static void main(String[] args) {
 
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
+
+        double[][] weeklyGrid = new double[21][4];
+
 
         //session loop
 
@@ -188,22 +251,26 @@ public class tracker {
             System.out.println();
             System.out.println("REKOLT PRODUCE TRACKER");
             System.out.println("1. Record a delivery ");
-            System.out.println("2. Exit");
+            System.out.println("2. Print weekly grid ");
+            System.out.println("3. Exit");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery();
+                    recordDelivery(weeklyGrid);
                     break;
 
                 case "2":
+                    printWeeklyGrid(weeklyGrid);
+
+                case "3":
                     running = false;
                     System.out.println("Exiting Session");
                     break;
                 default:
-                    System.out.println("Please choose 1, or 2.");
+                    System.out.println("Please choose 1, 2, or 3.");
                     break;
             }
         }
