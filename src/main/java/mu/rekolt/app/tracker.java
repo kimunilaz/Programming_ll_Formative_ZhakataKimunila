@@ -1,7 +1,10 @@
 package mu.rekolt.app;
 
-import java.util.Scanner;
+import mu.rekolt.model.Deliveries;
 
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 import static java.lang.IO.print;
 
 
@@ -115,7 +118,7 @@ public class tracker {
 
 
 
-    public static void recordDelivery(double[][] weeklyGrid) {
+    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries) {
 
 
 
@@ -154,7 +157,6 @@ public class tracker {
                 throw new IllegalArgumentException("Unknown produce code: " + product_code);
         }
 
-
         double gradeMultiplier;
         String gradeLabel;
         if (score >= 85) {
@@ -183,6 +185,15 @@ public class tracker {
             double transportLevy = massKg * 2;
             netPayable = categoryValue - commission - transportLevy;
         }
+
+
+        String deliveryId = "D-" + (1000 + deliveries.size() + 1);
+        Deliveries delivery = new Deliveries(deliveryId, member_Id, memberName, product_code,
+                massKg, score, week, gradeLabel, netPayable);
+        deliveries.add(delivery);
+
+
+
 
         System.out.printf("Grade %s%n", gradeLabel);
         System.out.printf("Base value %.2f%n", baseValue);
@@ -243,6 +254,7 @@ public class tracker {
         Scanner scanner = new Scanner(System.in);
 
         double[][] weeklyGrid = new double[21][4];
+        List<Deliveries> deliveries = new ArrayList<>();
 
 
         //session loop
@@ -259,7 +271,7 @@ public class tracker {
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery(weeklyGrid);
+                    recordDelivery(weeklyGrid, deliveries);
                     break;
 
                 case "2":
