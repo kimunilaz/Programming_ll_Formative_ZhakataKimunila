@@ -1,44 +1,64 @@
 package mu.rekolt.model;
 
 
-public class Deliveries{
+public class Deliveries implements Payable, Reportable {
     private String id;
     private String member_Id;
-    private String product_code;
-    private double massKg;
-    private int score;
+    private Produce produce;
     private int week;
-    private String grade;
-    private double netPayable;
+    private Grade grade;
 
-    public Deliveries(String id, String member_Id, String product_code,
-                    double massKg, int score, int week, String grade, double netPayable) {
+    public Deliveries(String id, String member_Id, String productCode,
+                      double massKg, int score, int week) {
         this.id = id;
         this.member_Id = member_Id;
-        this.product_code = product_code;
-        this.massKg = massKg;
-        this.score = score;
+        this.produce = Produce.create(productCode, massKg, score);
         this.week = week;
-        this.grade = grade;
-        this.netPayable = netPayable;
+
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public double netPayable() {
+        if (grade == Grade.REJECT) {
+            return 0.00;
+        }
+        double categoryValue = produce.baseValue() * grade.getMultiplier() * produce.categoryMultiplier();
+        double commission = categoryValue * 0.05;
+        double transportLevy = produce.getMassKg() * 2;
+        return categoryValue - commission - transportLevy;
     }
 
-    public String getMemberId() {
-        return member_Id; }
+    @Override
+    public String toReportRow() {
+        return id + "  " + member_Id + "  " + produce.getCode() + "  " +
+                String.format("%.1f kg", produce.getMassKg()) + "  " +
+                grade + "  " + String.format("%.2f", netPayable());
+    }
 
-    public double getNetPayable() {
-        return netPayable; }
+    @Override
+    public String toString() {
+        return toReportRow();
+    }
 
-    public double getMassKg() {
-        return massKg; }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Deliveries)) return false;
+        Deliveries other = (Deliveries) obj;
+        return this.id.equals(other.id);
+    }
 
-    public String getProduceCode() {
-        return product_code; }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
-    public String getGrade() {
-        return grade; }
+    public String getId() { return id; }
+    public String getMemberId() { return member_Id; }
+   // public String getMemberName() { return memberName; }
+    public String getProduceCode() { return produce.getCode(); }
+    public double getMassKg() { return produce.getMassKg(); }
+    public String getGrade() { return grade.toString(); }
+    public double getNetPayable() { return netPayable(); }
+    public int getWeek() { return week; }
 }

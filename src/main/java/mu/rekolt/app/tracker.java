@@ -1,7 +1,9 @@
 package mu.rekolt.app;
 
 import mu.rekolt.model.Deliveries;
+import mu.rekolt.model.Grade;
 import mu.rekolt.model.Member;
+import mu.rekolt.model.Produce;
 
 import java.util.Comparator;
 
@@ -141,63 +143,66 @@ public class tracker {
         int column = produceColumnIndex(product_code);
         weeklyGrid[week][column] += massKg;
 
-        double unitPrice;
-        double categoryMultiplier;
-        switch (product_code) {
-            case "MZE":
-                unitPrice = 30;
-                categoryMultiplier = 1;
-                break;
-            case "BNS":
-                unitPrice = 90;
-                categoryMultiplier = 1;
-                break;
-            case "POT":
-                unitPrice = 45;
-                categoryMultiplier = 0.90;
-                break;
-            case "TEA":
-                unitPrice = 25;
-                categoryMultiplier = 1.10;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown produce code: " + product_code);
-        }
+//        double unitPrice;
+//        double categoryMultiplier;
+//        switch (product_code) {
+//            case "MZE":
+//                unitPrice = 30;
+//                categoryMultiplier = 1;
+//                break;
+//            case "BNS":
+//                unitPrice = 90;
+//                categoryMultiplier = 1;
+//                break;
+//            case "POT":
+//                unitPrice = 45;
+//                categoryMultiplier = 0.90;
+//                break;
+//            case "TEA":
+//                unitPrice = 25;
+//                categoryMultiplier = 1.10;
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Unknown produce code: " + product_code);
+//        }
+//
+//        double gradeMultiplier;
+//        String gradeLabel;
+//        if (score >= 85) {
+//            gradeMultiplier = 1.15;
+//            gradeLabel = "A";
+//        } else if (score >= 70) {
+//            gradeMultiplier = 1.00;
+//            gradeLabel = "B";
+//        } else if (score >= 50) {
+//            gradeMultiplier = 0.85;
+//            gradeLabel = "C";
+//        } else {
+//            gradeMultiplier = 0.00;
+//            gradeLabel = "REJECT";
+//        }
 
-        double gradeMultiplier;
-        String gradeLabel;
-        if (score >= 85) {
-            gradeMultiplier = 1.15;
-            gradeLabel = "A";
-        } else if (score >= 70) {
-            gradeMultiplier = 1.00;
-            gradeLabel = "B";
-        } else if (score >= 50) {
-            gradeMultiplier = 0.85;
-            gradeLabel = "C";
-        } else {
-            gradeMultiplier = 0.00;
-            gradeLabel = "REJECT";
-        }
+//        double baseValue = massKg * unitPrice;
+//        double gradedValue = baseValue * gradeMultiplier;
+//        double categoryValue = gradedValue * categoryMultiplier;
+//
+//        double netPayable;
+//        if (gradeLabel.equals("REJECT")) {
+//            netPayable = 0.00;
+//        } else {
+//            double commission = categoryValue * 0.05;
+//            double transportLevy = massKg * 2;
+//            netPayable = categoryValue - commission - transportLevy;
+//        }
 
-        double baseValue = massKg * unitPrice;
-        double gradedValue = baseValue * gradeMultiplier;
-        double categoryValue = gradedValue * categoryMultiplier;
-
-        double netPayable;
-        if (gradeLabel.equals("REJECT")) {
-            netPayable = 0.00;
-        } else {
-            double commission = categoryValue * 0.05;
-            double transportLevy = massKg * 2;
-            netPayable = categoryValue - commission - transportLevy;
-        }
-
+        Produce produce = Produce.create(product_code, massKg, score);
+        Grade grade = Grade.fromScore(score);
 
         String deliveryId = "D-" + (1000 + deliveries.size() + 1);
         Deliveries delivery = new Deliveries(deliveryId, member_Id, product_code,
-                massKg, score, week, gradeLabel, netPayable);
+                massKg, score, week);
         deliveries.add(delivery);
+        double netPayable = delivery.netPayable();
 
 
         double currentTotal = individualsTotals.getOrDefault(member_Id, 0.0);
@@ -211,20 +216,24 @@ public class tracker {
 
         //testing
         //System.out.println(member_deliveries.get(member_Id).size());
-        System.out.println(memberIds.size());
+        //System.out.println(memberIds.size());
 
-
-
-
-
-
-        System.out.printf("Grade %s%n", gradeLabel);
-        System.out.printf("Base value %.2f%n", baseValue);
-        System.out.printf("Graded value %.2f%n", gradedValue);
-        System.out.printf("Category value %.2f%n", categoryValue);
+        System.out.printf("Delivery %s recorded. Grade %s%n", deliveryId, grade);
         System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
-
     }
+
+
+
+
+
+//
+//        System.out.printf("Grade %s%n", gradeLabel);
+//        System.out.printf("Base value %.2f%n", baseValue);
+//        System.out.printf("Graded value %.2f%n", gradedValue);
+//        System.out.printf("Category value %.2f%n", categoryValue);
+//        System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
+
+
 
 
 

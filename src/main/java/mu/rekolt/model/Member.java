@@ -12,6 +12,7 @@ public class Member implements Comparable<Member> {
     public String getId() { return id; }
     //public String getName() { return name; }
 
+    @Override
     public int compareTo(Member other) {
         return this.id.compareTo(other.id);
     }
