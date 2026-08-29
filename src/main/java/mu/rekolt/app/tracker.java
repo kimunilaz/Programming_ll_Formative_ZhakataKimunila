@@ -1,6 +1,7 @@
 package mu.rekolt.app;
 
 import mu.rekolt.model.Deliveries;
+import java.util.Comparator;
 
 import java.util.*;
 
@@ -220,6 +221,8 @@ public class tracker {
 
     }
 
+
+
     public static int produceColumnIndex(String product_code) {
         switch (product_code) {
             case "MZE":
@@ -263,7 +266,24 @@ public class tracker {
                 weeklyGrid[singleWeek][0], weeklyGrid[singleWeek][1],
                 weeklyGrid[singleWeek][2], weeklyGrid[singleWeek][3], weekTotal);
 
+    }
+
+    public static List<Deliveries> topDeliveriesByValue(List<Deliveries> deliveries, int n) {
+        List<Deliveries> sorted = new ArrayList<>(deliveries);
+        sorted.sort(new Comparator<Deliveries>() {
+            public int compare(Deliveries a, Deliveries b) {
+                return Double.compare(b.getNetPayable(), a.getNetPayable());
+            }
+        });
+        List<Deliveries> top = new ArrayList<>();
+        for (int i = 0; i < n && i < sorted.size(); i++) {
+            top.add(sorted.get(i));
         }
+        return top;
+    }
+
+
+
 
     public static void main(String[] args) {
 
@@ -299,6 +319,16 @@ public class tracker {
 
                 case "2":
                     printWeeklyGrid(weeklyGrid);
+                    List<Deliveries> top5 = topDeliveriesByValue(deliveries, 5);
+
+                    System.out.println("top five deliveries by value");
+
+                    for (Deliveries d : top5) {
+                        System.out.printf("%s   %s   %s   %.1f kg   %s   %.2f%n",
+                                d.getId(), d.getMemberId(), d.getProduceCode(), d.getMassKg(), d.getGrade(), d.getNetPayable());
+                    }
+                    break;
+
 
                 case "3":
                     running = false;
