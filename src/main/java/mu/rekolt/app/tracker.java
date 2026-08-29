@@ -10,6 +10,7 @@ import java.util.Collections;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 import static java.lang.IO.print;
 
@@ -286,6 +287,26 @@ public class tracker {
         return top;
     }
 
+    public static Member findMemberById(Map<String, Member> members, String id) {
+        if (members.containsKey(id)) {
+            return members.get(id);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<Deliveries> excludingRejected(List<Deliveries> deliveries) {
+        List<Deliveries> copy = new ArrayList<>(deliveries);
+        Iterator<Deliveries> it = copy.iterator();
+        while (it.hasNext()) {
+            Deliveries d = it.next();
+            if (d.getGrade().equals("REJECT")) {
+                it.remove();
+            }
+        }
+        return copy;
+    }
+
 
 
 
@@ -332,16 +353,30 @@ public class tracker {
                         System.out.println(m.getId());
                     }
 
+                    System.out.print("Look up a member by id (enter to skip): ");
+                    String lookupId = scanner.nextLine();
+                    if (!lookupId.isEmpty()) {
+                        Member found = findMemberById(members, lookupId);
+                        if (found != null) {
+                            System.out.println("Found: " + found.getId());
+                        } else {
+                            System.out.println("No member found with id " + lookupId);
+                        }
+                    }
+
 
                     printWeeklyGrid(weeklyGrid);
                     List<Deliveries> top5 = topDeliveriesByValue(deliveries, 5);
 
-                    System.out.println("top five deliveries by value");
+                    System.out.println("top five deliveries");
 
                     for (Deliveries d : top5) {
                         System.out.printf("%s   %s   %s   %.1f kg   %s   %.2f%n",
                                 d.getId(), d.getMemberId(), d.getProduceCode(), d.getMassKg(), d.getGrade(), d.getNetPayable());
                     }
+
+                    List<Deliveries> payingOnly = excludingRejected(deliveries);
+                    System.out.println("Deliveries excluding REJECT: " + payingOnly.size() + " of " + deliveries.size() + " total");
                     break;
 
 
