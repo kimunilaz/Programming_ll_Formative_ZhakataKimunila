@@ -1,9 +1,12 @@
 package mu.rekolt.app;
 
 import mu.rekolt.model.Deliveries;
+import mu.rekolt.model.Member;
+
 import java.util.Comparator;
 
 import java.util.*;
+import java.util.Collections;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -121,7 +124,7 @@ public class tracker {
 
 
 
-    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries, Set<String> memberIds) {
+    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries, Set<String> memberIds, Map<String, Member> members) {
 
 
 
@@ -203,6 +206,7 @@ public class tracker {
         member_deliveries.put(member_Id, memberDeliveries);
 
         memberIds.add(member_Id);
+        members.putIfAbsent(member_Id, new Member(member_Id));
 
         //testing
         //System.out.println(member_deliveries.get(member_Id).size());
@@ -297,6 +301,9 @@ public class tracker {
 
         Set<String> member_Ids = new HashSet<>();
 
+        Map<String, Member> members = new HashMap<>();
+
+
 
 
         //session loop
@@ -313,7 +320,7 @@ public class tracker {
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries, member_Ids);
+                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries, member_Ids, members);
 
                     break;
 
