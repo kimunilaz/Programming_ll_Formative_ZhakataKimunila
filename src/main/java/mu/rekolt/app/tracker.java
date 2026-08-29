@@ -2,9 +2,8 @@ package mu.rekolt.app;
 
 import mu.rekolt.model.Deliveries;
 
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import static java.lang.IO.print;
 
 
@@ -118,7 +117,7 @@ public class tracker {
 
 
 
-    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries) {
+    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries) {
 
 
 
@@ -188,9 +187,13 @@ public class tracker {
 
 
         String deliveryId = "D-" + (1000 + deliveries.size() + 1);
-        Deliveries delivery = new Deliveries(deliveryId, member_Id, memberName, product_code,
+        Deliveries delivery = new Deliveries(deliveryId, member_Id, product_code,
                 massKg, score, week, gradeLabel, netPayable);
         deliveries.add(delivery);
+
+
+        double currentTotal = individualsTotals.getOrDefault(member_Id, 0.0);
+        individualsTotals.put(member_Id, currentTotal + netPayable);
 
 
 
@@ -255,6 +258,9 @@ public class tracker {
 
         double[][] weeklyGrid = new double[21][4];
         List<Deliveries> deliveries = new ArrayList<>();
+        Map<String, Double> individualsTotals = new HashMap<>();
+        Map<String, List<Deliveries>> member_deliveries = new HashMap<>();
+
 
 
         //session loop
@@ -271,7 +277,7 @@ public class tracker {
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery(weeklyGrid, deliveries);
+                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries);
                     break;
 
                 case "2":
