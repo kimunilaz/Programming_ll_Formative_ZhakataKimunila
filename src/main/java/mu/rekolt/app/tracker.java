@@ -194,6 +194,12 @@ public class tracker {
 
         double currentTotal = individualsTotals.getOrDefault(member_Id, 0.0);
         individualsTotals.put(member_Id, currentTotal + netPayable);
+        List<Deliveries> memberDeliveries = member_deliveries.getOrDefault(member_Id, new ArrayList<>());
+        memberDeliveries.add(delivery);
+        member_deliveries.put(member_Id, memberDeliveries);
+
+        //testing
+        System.out.println(member_deliveries.get(member_Id).size());
 
 
 
@@ -278,6 +284,7 @@ public class tracker {
             switch (choice) {
                 case "1":
                     recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries);
+
                     break;
 
                 case "2":
