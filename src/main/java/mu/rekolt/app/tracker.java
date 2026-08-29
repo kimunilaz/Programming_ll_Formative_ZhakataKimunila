@@ -1,6 +1,16 @@
 package mu.rekolt.app;
 
-import java.util.Scanner;
+import mu.rekolt.model.Deliveries;
+import mu.rekolt.model.Member;
+
+import java.util.Comparator;
+
+import java.util.*;
+import java.util.Collections;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Iterator;
 
 import static java.lang.IO.print;
 
@@ -115,7 +125,7 @@ public class tracker {
 
 
 
-    public static void recordDelivery(double[][] weeklyGrid) {
+    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries, Set<String> memberIds, Map<String, Member> members) {
 
 
 
@@ -154,7 +164,6 @@ public class tracker {
                 throw new IllegalArgumentException("Unknown produce code: " + product_code);
         }
 
-
         double gradeMultiplier;
         String gradeLabel;
         if (score >= 85) {
@@ -184,6 +193,31 @@ public class tracker {
             netPayable = categoryValue - commission - transportLevy;
         }
 
+
+        String deliveryId = "D-" + (1000 + deliveries.size() + 1);
+        Deliveries delivery = new Deliveries(deliveryId, member_Id, product_code,
+                massKg, score, week, gradeLabel, netPayable);
+        deliveries.add(delivery);
+
+
+        double currentTotal = individualsTotals.getOrDefault(member_Id, 0.0);
+        individualsTotals.put(member_Id, currentTotal + netPayable);
+        List<Deliveries> memberDeliveries = member_deliveries.getOrDefault(member_Id, new ArrayList<>());
+        memberDeliveries.add(delivery);
+        member_deliveries.put(member_Id, memberDeliveries);
+
+        memberIds.add(member_Id);
+        members.putIfAbsent(member_Id, new Member(member_Id));
+
+        //testing
+        //System.out.println(member_deliveries.get(member_Id).size());
+        System.out.println(memberIds.size());
+
+
+
+
+
+
         System.out.printf("Grade %s%n", gradeLabel);
         System.out.printf("Base value %.2f%n", baseValue);
         System.out.printf("Graded value %.2f%n", gradedValue);
@@ -191,6 +225,8 @@ public class tracker {
         System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
 
     }
+
+
 
     public static int produceColumnIndex(String product_code) {
         switch (product_code) {
@@ -235,7 +271,44 @@ public class tracker {
                 weeklyGrid[singleWeek][0], weeklyGrid[singleWeek][1],
                 weeklyGrid[singleWeek][2], weeklyGrid[singleWeek][3], weekTotal);
 
+    }
+
+    public static List<Deliveries> topDeliveriesByValue(List<Deliveries> deliveries, int n) {
+        List<Deliveries> sorted = new ArrayList<>(deliveries);
+        sorted.sort(new Comparator<Deliveries>() {
+            public int compare(Deliveries a, Deliveries b) {
+                return Double.compare(b.getNetPayable(), a.getNetPayable());
+            }
+        });
+        List<Deliveries> top = new ArrayList<>();
+        for (int i = 0; i < n && i < sorted.size(); i++) {
+            top.add(sorted.get(i));
         }
+        return top;
+    }
+
+    public static Member findMemberById(Map<String, Member> members, String id) {
+        if (members.containsKey(id)) {
+            return members.get(id);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<Deliveries> excludingRejected(List<Deliveries> deliveries) {
+        List<Deliveries> copy = new ArrayList<>(deliveries);
+        Iterator<Deliveries> it = copy.iterator();
+        while (it.hasNext()) {
+            Deliveries d = it.next();
+            if (d.getGrade().equals("REJECT")) {
+                it.remove();
+            }
+        }
+        return copy;
+    }
+
+
+
 
     public static void main(String[] args) {
 
@@ -243,6 +316,15 @@ public class tracker {
         Scanner scanner = new Scanner(System.in);
 
         double[][] weeklyGrid = new double[21][4];
+        List<Deliveries> deliveries = new ArrayList<>();
+        Map<String, Double> individualsTotals = new HashMap<>();
+        Map<String, List<Deliveries>> member_deliveries = new HashMap<>();
+
+        Set<String> member_Ids = new HashSet<>();
+
+        Map<String, Member> members = new HashMap<>();
+
+
 
 
         //session loop
@@ -259,11 +341,44 @@ public class tracker {
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery(weeklyGrid);
+                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries, member_Ids, members);
+
                     break;
 
                 case "2":
+                    List<Member> memberList = new ArrayList<>(members.values());
+                    Collections.sort(memberList);
+                    System.out.println("Members (sorted by id)");
+                    for (Member m : memberList) {
+                        System.out.println(m.getId());
+                    }
+
+                    System.out.print("Look up a member by id (enter to skip): ");
+                    String lookupId = scanner.nextLine();
+                    if (!lookupId.isEmpty()) {
+                        Member found = findMemberById(members, lookupId);
+                        if (found != null) {
+                            System.out.println("Found: " + found.getId());
+                        } else {
+                            System.out.println("No member found with id " + lookupId);
+                        }
+                    }
+
+
                     printWeeklyGrid(weeklyGrid);
+                    List<Deliveries> top5 = topDeliveriesByValue(deliveries, 5);
+
+                    System.out.println("top five deliveries");
+
+                    for (Deliveries d : top5) {
+                        System.out.printf("%s   %s   %s   %.1f kg   %s   %.2f%n",
+                                d.getId(), d.getMemberId(), d.getProduceCode(), d.getMassKg(), d.getGrade(), d.getNetPayable());
+                    }
+
+                    List<Deliveries> payingOnly = excludingRejected(deliveries);
+                    System.out.println("Deliveries excluding REJECT: " + payingOnly.size() + " of " + deliveries.size() + " total");
+                    break;
+
 
                 case "3":
                     running = false;
