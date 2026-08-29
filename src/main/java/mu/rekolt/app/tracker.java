@@ -325,6 +325,14 @@ public class tracker {
                     break;
 
                 case "2":
+                    List<Member> memberList = new ArrayList<>(members.values());
+                    Collections.sort(memberList);
+                    System.out.println("Members (sorted by id)");
+                    for (Member m : memberList) {
+                        System.out.println(m.getId());
+                    }
+
+
                     printWeeklyGrid(weeklyGrid);
                     List<Deliveries> top5 = topDeliveriesByValue(deliveries, 5);
 
