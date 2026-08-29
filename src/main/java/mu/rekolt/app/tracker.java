@@ -4,6 +4,9 @@ import mu.rekolt.model.Deliveries;
 
 import java.util.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.lang.IO.print;
 
 
@@ -117,7 +120,7 @@ public class tracker {
 
 
 
-    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries) {
+    public static void recordDelivery(double[][] weeklyGrid, List<Deliveries> deliveries, Map<String, Double> individualsTotals,Map<String, List<Deliveries>> member_deliveries, Set<String> memberIds) {
 
 
 
@@ -198,8 +201,13 @@ public class tracker {
         memberDeliveries.add(delivery);
         member_deliveries.put(member_Id, memberDeliveries);
 
+        memberIds.add(member_Id);
+
         //testing
-        System.out.println(member_deliveries.get(member_Id).size());
+        //System.out.println(member_deliveries.get(member_Id).size());
+        System.out.println(memberIds.size());
+
+
 
 
 
@@ -267,6 +275,8 @@ public class tracker {
         Map<String, Double> individualsTotals = new HashMap<>();
         Map<String, List<Deliveries>> member_deliveries = new HashMap<>();
 
+        Set<String> member_Ids = new HashSet<>();
+
 
 
         //session loop
@@ -283,7 +293,7 @@ public class tracker {
 //here the switch calls the method associated with the choice of the user
             switch (choice) {
                 case "1":
-                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries);
+                    recordDelivery(weeklyGrid, deliveries, individualsTotals, member_deliveries, member_Ids);
 
                     break;
 
