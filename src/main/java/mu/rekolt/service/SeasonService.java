@@ -69,17 +69,6 @@ public class SeasonService {
         }
     }
 
-//    public static void printWeeklyGrid(double[][] weeklyGrid, int singleWeek) {
-//        System.out.println("Weekly volume grid (kg) — week " + singleWeek);
-//        double weekTotal = 0;
-//        for (int col = 0; col < 4; col++) {
-//            weekTotal += weeklyGrid[singleWeek][col];
-//        }
-//        System.out.printf("MZE %.1f  BNS %.1f  POT %.1f  TEA %.1f  Total %.1f%n",
-//                weeklyGrid[singleWeek][0], weeklyGrid[singleWeek][1],
-//                weeklyGrid[singleWeek][2], weeklyGrid[singleWeek][3], weekTotal);
-//
-//    }
 
     public  List<Deliveries> topDeliveriesByValue(int n) {
         List<Deliveries> sorted = new ArrayList<>(deliveries);
