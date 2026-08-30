@@ -4,6 +4,7 @@ import mu.rekolt.model.Deliveries;
 import mu.rekolt.model.Grade;
 import mu.rekolt.model.Member;
 import mu.rekolt.model.Produce;
+import mu.rekolt.service.ReportService;
 import mu.rekolt.service.SeasonService;
 import mu.rekolt.util.InputValidator;
 
@@ -180,7 +181,7 @@ public class tracker {
 //                    break;
 
                 case "3":
-                    System.out.println("Report generation");
+                    new ReportService().generate(season);;
                     break;
 
 
