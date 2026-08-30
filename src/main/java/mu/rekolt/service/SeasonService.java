@@ -92,6 +92,10 @@ public class SeasonService {
         }
     }
 
+    public Member findMemberById(String id) {
+        return findMemberById(members, id);
+    }
+
     public static List<Deliveries> excludingRejected(List<Deliveries> deliveries) {
         List<Deliveries> copy = new ArrayList<>(deliveries);
         Iterator<Deliveries> it = copy.iterator();

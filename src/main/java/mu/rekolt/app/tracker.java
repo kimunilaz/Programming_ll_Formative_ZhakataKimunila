@@ -39,6 +39,7 @@ public class tracker {
             System.out.println("REKOLT PRODUCE TRACKER");
             System.out.println("1. Record a delivery   3. Generate the season report");
             System.out.println("2. Season figures on screen   4. Exit");
+            System.out.println("5. Search member by ID");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
@@ -76,8 +77,23 @@ public class tracker {
                     running = false;
                     System.out.println("Exiting Session");
                     break;
+
+                case "5":
+                    String searchId = InputValidator.MemberId();
+                    Member foundMember = season.findMemberById(searchId);
+                    if (foundMember != null) {
+                        System.out.println("Member found");
+                        System.out.println("Member ID: " + foundMember.getId());
+                        System.out.println("Member name: " + foundMember.getName());
+                        System.out.println("Deliveries recorded: "
+                                + season.getDeliveriesForMember(foundMember.getId()).size());
+                    } else {
+                        System.out.println("No member found with ID " + searchId);
+                    }
+                    break;
+
                 default:
-                    System.out.println("Please choose 1, 2, or 3.");
+                    System.out.println("Please choose an option from 1 to 5.");
                     break;
             }
         }
