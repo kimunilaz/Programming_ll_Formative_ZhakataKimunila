@@ -13,8 +13,8 @@ public class Deliveries implements Payable, Reportable {
         this.id = id;
         this.member_Id = member_Id;
         this.produce = Produce.create(productCode, massKg, score);
-        this.week = week;
         this.grade = Grade.fromScore(score);
+        this.week = week;
 
     }
 

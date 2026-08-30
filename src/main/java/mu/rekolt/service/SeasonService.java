@@ -14,10 +14,10 @@ public class SeasonService {
 
 
     public void addDelivery(String member_Id, String produceCode, double massKg, int score, int week) {
-        Produce produce = Produce.create(produceCode, massKg, score);
         Grade grade = Grade.fromScore(score);
         String deliveryId = "D-" + (1000 + deliveries.size() + 1);
-        Deliveries delivery = new Deliveries(deliveryId, member_Id, produce, grade, week);
+        Deliveries delivery = new Deliveries(
+                deliveryId, member_Id, produceCode, massKg, score, week);
         double netPayable = delivery.netPayable();
 
 
