@@ -1,6 +1,6 @@
 package mu.rekolt.model;
 
-public class Member implements Comparable<Member> {
+public class Member implements Comparable<Member>, Reportable {
     private String id;
     //private String name;
 
@@ -15,5 +15,10 @@ public class Member implements Comparable<Member> {
     @Override
     public int compareTo(Member other) {
         return this.id.compareTo(other.id);
+    }
+
+    @Override
+    public String toReportRow() {
+        return id;
     }
 }
