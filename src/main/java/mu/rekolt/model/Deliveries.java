@@ -60,7 +60,11 @@ public class Deliveries implements Payable, Reportable {
     public String getMemberId() { return member_Id; }
     public String getMemberName() { return memberName; }
     public String getProduceCode() { return produce.getCode(); }
+    public String getProduceCategory() { return produce.getCategoryName(); }
     public double getMassKg() { return produce.getMassKg(); }
+    public int getQualityScore() { return produce.getQualityScore(); }
+    public double getUnitPrice() { return produce.getUnitPrice(); }
+    public double getCategoryMultiplier() { return produce.categoryMultiplier(); }
     public String getGrade() { return grade.toString(); }
     public double getNetPayable() { return netPayable(); }
     public int getWeek() { return week; }

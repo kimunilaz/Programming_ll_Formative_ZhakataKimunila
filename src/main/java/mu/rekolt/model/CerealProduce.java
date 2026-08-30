@@ -10,4 +10,5 @@ public class CerealProduce extends Produce {
 
     protected double unitPrice() { return price; }
     public double categoryMultiplier() { return 1.00; }
+    public String getCategoryName() { return "Cereal"; }
 }

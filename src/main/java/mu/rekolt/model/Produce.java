@@ -17,10 +17,12 @@ public abstract class Produce {
 
     protected abstract double unitPrice();
     public abstract double categoryMultiplier();
+    public abstract String getCategoryName();
 
     public String getCode() { return code; }
     public double getMassKg() { return massKg; }
     public int getQualityScore() { return score; }
+    public double getUnitPrice() { return unitPrice(); }
 
 
     public static Produce create(String code, double massKg, int qualityScore) {

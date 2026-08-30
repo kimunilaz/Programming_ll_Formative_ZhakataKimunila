@@ -8,4 +8,5 @@ public class PerishableProduce extends Produce {
     }
     protected double unitPrice() { return price; }
     public double categoryMultiplier() { return 0.90; }
+    public String getCategoryName() { return "Perishable"; }
 }

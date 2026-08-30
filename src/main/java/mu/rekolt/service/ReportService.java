@@ -116,8 +116,8 @@ public class ReportService {
     }
 
     private XWPFTable createDeliveryTable(XWPFDocument document, List<Deliveries> deliveries) {
-        int[] widths = {1400, 750, 1250, 1400, 1200, 3360};
-        String[] headings = {"Delivery ID", "Week", "Produce", "Mass (kg)", "Grade", "Net payable (MUR)"};
+        int[] widths = {1150, 650, 750, 1500, 1050, 850, 1000, 2410};
+        String[] headings = {"Delivery ID", "Week", "Code", "Category", "Mass (kg)", "Score", "Grade", "Net (MUR)"};
 
         XWPFTable table = document.createTable(1, headings.length);
         table.setStyleID("TableGrid");
@@ -136,9 +136,11 @@ public class ReportService {
             writeCell(row.getCell(0), delivery.getId(), false, ParagraphAlignment.LEFT, widths[0]);
             writeCell(row.getCell(1), String.valueOf(delivery.getWeek()), false, ParagraphAlignment.CENTER, widths[1]);
             writeCell(row.getCell(2), delivery.getProduceCode(), false, ParagraphAlignment.CENTER, widths[2]);
-            writeCell(row.getCell(3), String.format("%.1f", delivery.getMassKg()), false, ParagraphAlignment.RIGHT, widths[3]);
-            writeCell(row.getCell(4), delivery.getGrade(), false, ParagraphAlignment.CENTER, widths[4]);
-            writeCell(row.getCell(5), String.format("%.2f", delivery.getNetPayable()), false, ParagraphAlignment.RIGHT, widths[5]);
+            writeCell(row.getCell(3), delivery.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[3]);
+            writeCell(row.getCell(4), String.format("%.1f", delivery.getMassKg()), false, ParagraphAlignment.RIGHT, widths[4]);
+            writeCell(row.getCell(5), String.valueOf(delivery.getQualityScore()), false, ParagraphAlignment.CENTER, widths[5]);
+            writeCell(row.getCell(6), delivery.getGrade(), false, ParagraphAlignment.CENTER, widths[6]);
+            writeCell(row.getCell(7), String.format("%.2f", delivery.getNetPayable()), false, ParagraphAlignment.RIGHT, widths[7]);
         }
 
         return table;
@@ -150,6 +152,60 @@ public class ReportService {
             total += delivery.getNetPayable();
         }
         return total;
+    }
+
+    private void addProduceSummary(XWPFDocument document, List<Deliveries> deliveries) {
+        if (deliveries.isEmpty()) {
+            XWPFParagraph emptyParagraph = document.createParagraph();
+            emptyParagraph.createRun().setText("No produce deliveries were recorded for this season.");
+            return;
+        }
+
+        int[] widths = {900, 1500, 1000, 1300, 1300, 1400, 1960};
+        String[] headings = {"Code", "Category", "Deliveries", "Mass (kg)",
+                "Unit price", "Category factor", "Payout (MUR)"};
+        String[] produceCodes = {"MZE", "BNS", "POT", "TEA"};
+
+        XWPFTable table = document.createTable(1, headings.length);
+        table.setStyleID("TableGrid");
+        table.setTableAlignment(TableRowAlign.LEFT);
+        table.setWidth(9360);
+        table.setCellMargins(80, 120, 80, 120);
+        table.getRow(0).setRepeatHeader(true);
+
+        for (int column = 0; column < headings.length; column++) {
+            writeCell(table.getRow(0).getCell(column), headings[column], true,
+                    ParagraphAlignment.CENTER, widths[column]);
+        }
+
+        for (String code : produceCodes) {
+            int deliveryCount = 0;
+            double totalMass = 0;
+            double totalPayout = 0;
+            Deliveries example = null;
+
+            for (Deliveries delivery : deliveries) {
+                if (delivery.getProduceCode().equals(code)) {
+                    deliveryCount++;
+                    totalMass += delivery.getMassKg();
+                    totalPayout += delivery.getNetPayable();
+                    example = delivery;
+                }
+            }
+
+            if (example != null) {
+                XWPFTableRow row = table.createRow();
+                writeCell(row.getCell(0), code, false, ParagraphAlignment.CENTER, widths[0]);
+                writeCell(row.getCell(1), example.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[1]);
+                writeCell(row.getCell(2), String.valueOf(deliveryCount), false, ParagraphAlignment.CENTER, widths[2]);
+                writeCell(row.getCell(3), String.format("%.1f", totalMass), false, ParagraphAlignment.RIGHT, widths[3]);
+                writeCell(row.getCell(4), String.format("%.2f", example.getUnitPrice()), false, ParagraphAlignment.RIGHT, widths[4]);
+                writeCell(row.getCell(5), String.format("%.2f", example.getCategoryMultiplier()), false,
+                        ParagraphAlignment.CENTER, widths[5]);
+                writeCell(row.getCell(6), String.format("%.2f", totalPayout), false,
+                        ParagraphAlignment.RIGHT, widths[6]);
+            }
+        }
     }
 
     private void addMemberStatement(XWPFDocument document, SeasonService season, Member member) {
@@ -219,6 +275,9 @@ public class ReportService {
             writeCell(row.getCell(3), String.format("%.2f", getMemberTotal(deliveries)), false,
                     ParagraphAlignment.RIGHT, widths[3]);
         }
+
+        addSectionHeading(document, "Produce summary");
+        addProduceSummary(document, season.getDeliveries());
 
         XWPFParagraph closingTotal = document.createParagraph();
         closingTotal.setAlignment(ParagraphAlignment.RIGHT);
