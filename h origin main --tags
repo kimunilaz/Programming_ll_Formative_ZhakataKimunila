@@ -1,0 +1,12 @@
+*   [33mb037427[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge Objective 3 collections into main
+[31m|[m[32m\[m  
+[31m|[m * [33m7a662a2[m[33m ([m[1;32mDeliveries[m[33m)[m Added Iteration for filtering and collections rationale
+[31m|[m * [33mb9998f0[m added iteration for rejected deliveries
+[31m|[m * [33m111724e[m Ordering by id
+[31m|[m * [33m3407b21[m Member class and main updated
+[31m|[m * [33mfd5fb96[m Created member class and comparable
+[31m|[m * [33m1d3da83[m Hashset added
+[31m|[m * [33m5a7e1c5[m testing
+[31m|[m * [33m6890c4c[m individual member delivery hasmap
+[31m|[m * [33m2a23dad[m rapped delivery into an object
+[31m|[m[31m/[m  
