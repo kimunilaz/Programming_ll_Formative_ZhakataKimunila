@@ -97,6 +97,11 @@ public class ReportService {
 
     private void writeCell(XWPFTableCell cell, String text, boolean header,
                            ParagraphAlignment alignment, int width) {
+        writeCell(cell, text, header, alignment, width, 10);
+    }
+
+    private void writeCell(XWPFTableCell cell, String text, boolean header,
+                           ParagraphAlignment alignment, int width, int fontSize) {
         cell.setWidth(String.valueOf(width));
         cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
         if (header) {
@@ -111,13 +116,14 @@ public class ReportService {
         XWPFRun run = paragraph.createRun();
         run.setText(text);
         run.setFontFamily("Calibri");
-        run.setFontSize(10);
+        run.setFontSize(fontSize);
         run.setBold(header);
     }
 
     private XWPFTable createDeliveryTable(XWPFDocument document, List<Deliveries> deliveries) {
-        int[] widths = {1150, 650, 750, 1500, 1050, 850, 1000, 2410};
-        String[] headings = {"Delivery ID", "Week", "Code", "Category", "Mass (kg)", "Score", "Grade", "Net (MUR)"};
+        int[] widths = {950, 550, 650, 1450, 850, 650, 850, 1600, 1810};
+        String[] headings = {"Delivery ID", "Week", "Code", "Category", "Mass (kg)",
+                "Score", "Grade", "Commission (MUR)", "Net (MUR)"};
 
         XWPFTable table = document.createTable(1, headings.length);
         table.setStyleID("TableGrid");
@@ -128,19 +134,22 @@ public class ReportService {
 
         for (int column = 0; column < headings.length; column++) {
             writeCell(table.getRow(0).getCell(column), headings[column], true,
-                    ParagraphAlignment.CENTER, widths[column]);
+                    ParagraphAlignment.CENTER, widths[column], 9);
         }
 
         for (Deliveries delivery : deliveries) {
             XWPFTableRow row = table.createRow();
-            writeCell(row.getCell(0), delivery.getId(), false, ParagraphAlignment.LEFT, widths[0]);
-            writeCell(row.getCell(1), String.valueOf(delivery.getWeek()), false, ParagraphAlignment.CENTER, widths[1]);
-            writeCell(row.getCell(2), delivery.getProduceCode(), false, ParagraphAlignment.CENTER, widths[2]);
-            writeCell(row.getCell(3), delivery.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[3]);
-            writeCell(row.getCell(4), String.format("%.1f", delivery.getMassKg()), false, ParagraphAlignment.RIGHT, widths[4]);
-            writeCell(row.getCell(5), String.valueOf(delivery.getQualityScore()), false, ParagraphAlignment.CENTER, widths[5]);
-            writeCell(row.getCell(6), delivery.getGrade(), false, ParagraphAlignment.CENTER, widths[6]);
-            writeCell(row.getCell(7), String.format("%.2f", delivery.getNetPayable()), false, ParagraphAlignment.RIGHT, widths[7]);
+            writeCell(row.getCell(0), delivery.getId(), false, ParagraphAlignment.LEFT, widths[0], 9);
+            writeCell(row.getCell(1), String.valueOf(delivery.getWeek()), false, ParagraphAlignment.CENTER, widths[1], 9);
+            writeCell(row.getCell(2), delivery.getProduceCode(), false, ParagraphAlignment.CENTER, widths[2], 9);
+            writeCell(row.getCell(3), delivery.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[3], 9);
+            writeCell(row.getCell(4), String.format("%.1f", delivery.getMassKg()), false, ParagraphAlignment.RIGHT, widths[4], 9);
+            writeCell(row.getCell(5), String.valueOf(delivery.getQualityScore()), false, ParagraphAlignment.CENTER, widths[5], 9);
+            writeCell(row.getCell(6), delivery.getGrade(), false, ParagraphAlignment.CENTER, widths[6], 9);
+            writeCell(row.getCell(7), String.format("%.2f", delivery.getCommission()), false,
+                    ParagraphAlignment.RIGHT, widths[7], 9);
+            writeCell(row.getCell(8), String.format("%.2f", delivery.getNetPayable()), false,
+                    ParagraphAlignment.RIGHT, widths[8], 9);
         }
 
         return table;
@@ -154,6 +163,14 @@ public class ReportService {
         return total;
     }
 
+    private double getTotalCommission(List<Deliveries> deliveries) {
+        double total = 0;
+        for (Deliveries delivery : deliveries) {
+            total += delivery.getCommission();
+        }
+        return total;
+    }
+
     private void addProduceSummary(XWPFDocument document, List<Deliveries> deliveries) {
         if (deliveries.isEmpty()) {
             XWPFParagraph emptyParagraph = document.createParagraph();
@@ -161,9 +178,9 @@ public class ReportService {
             return;
         }
 
-        int[] widths = {900, 1500, 1000, 1300, 1300, 1400, 1960};
+        int[] widths = {700, 1250, 850, 1100, 1100, 1250, 1450, 1660};
         String[] headings = {"Code", "Category", "Deliveries", "Mass (kg)",
-                "Unit price", "Category factor", "Payout (MUR)"};
+                "Unit price", "Category factor", "Commission (MUR)", "Payout (MUR)"};
         String[] produceCodes = {"MZE", "BNS", "POT", "TEA"};
 
         XWPFTable table = document.createTable(1, headings.length);
@@ -175,12 +192,13 @@ public class ReportService {
 
         for (int column = 0; column < headings.length; column++) {
             writeCell(table.getRow(0).getCell(column), headings[column], true,
-                    ParagraphAlignment.CENTER, widths[column]);
+                    ParagraphAlignment.CENTER, widths[column], 9);
         }
 
         for (String code : produceCodes) {
             int deliveryCount = 0;
             double totalMass = 0;
+            double totalCommission = 0;
             double totalPayout = 0;
             Deliveries example = null;
 
@@ -188,6 +206,7 @@ public class ReportService {
                 if (delivery.getProduceCode().equals(code)) {
                     deliveryCount++;
                     totalMass += delivery.getMassKg();
+                    totalCommission += delivery.getCommission();
                     totalPayout += delivery.getNetPayable();
                     example = delivery;
                 }
@@ -195,15 +214,18 @@ public class ReportService {
 
             if (example != null) {
                 XWPFTableRow row = table.createRow();
-                writeCell(row.getCell(0), code, false, ParagraphAlignment.CENTER, widths[0]);
-                writeCell(row.getCell(1), example.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[1]);
-                writeCell(row.getCell(2), String.valueOf(deliveryCount), false, ParagraphAlignment.CENTER, widths[2]);
-                writeCell(row.getCell(3), String.format("%.1f", totalMass), false, ParagraphAlignment.RIGHT, widths[3]);
-                writeCell(row.getCell(4), String.format("%.2f", example.getUnitPrice()), false, ParagraphAlignment.RIGHT, widths[4]);
+                writeCell(row.getCell(0), code, false, ParagraphAlignment.CENTER, widths[0], 9);
+                writeCell(row.getCell(1), example.getProduceCategory(), false, ParagraphAlignment.LEFT, widths[1], 9);
+                writeCell(row.getCell(2), String.valueOf(deliveryCount), false, ParagraphAlignment.CENTER, widths[2], 9);
+                writeCell(row.getCell(3), String.format("%.1f", totalMass), false, ParagraphAlignment.RIGHT, widths[3], 9);
+                writeCell(row.getCell(4), String.format("%.2f", example.getUnitPrice()), false,
+                        ParagraphAlignment.RIGHT, widths[4], 9);
                 writeCell(row.getCell(5), String.format("%.2f", example.getCategoryMultiplier()), false,
-                        ParagraphAlignment.CENTER, widths[5]);
-                writeCell(row.getCell(6), String.format("%.2f", totalPayout), false,
-                        ParagraphAlignment.RIGHT, widths[6]);
+                        ParagraphAlignment.CENTER, widths[5], 9);
+                writeCell(row.getCell(6), String.format("%.2f", totalCommission), false,
+                        ParagraphAlignment.RIGHT, widths[6], 9);
+                writeCell(row.getCell(7), String.format("%.2f", totalPayout), false,
+                        ParagraphAlignment.RIGHT, widths[7], 9);
             }
         }
     }
@@ -224,9 +246,20 @@ public class ReportService {
             createDeliveryTable(document, memberDeliveries);
         }
 
+        XWPFParagraph commissionParagraph = document.createParagraph();
+        commissionParagraph.setAlignment(ParagraphAlignment.RIGHT);
+        commissionParagraph.setSpacingBefore(180);
+        commissionParagraph.setSpacingAfter(60);
+        XWPFRun commissionRun = commissionParagraph.createRun();
+        commissionRun.setText(String.format("TOTAL COMMISSION (5%%): %.2f MUR",
+                getTotalCommission(memberDeliveries)));
+        commissionRun.setBold(true);
+        commissionRun.setFontFamily("Calibri");
+        commissionRun.setFontSize(11);
+
         XWPFParagraph totalParagraph = document.createParagraph();
         totalParagraph.setAlignment(ParagraphAlignment.RIGHT);
-        totalParagraph.setSpacingBefore(180);
+        totalParagraph.setSpacingBefore(60);
         totalParagraph.setSpacingAfter(300);
         XWPFRun totalRun = totalParagraph.createRun();
         totalRun.setText(String.format("NET PAYABLE: %.2f MUR", getMemberTotal(memberDeliveries)));
@@ -252,8 +285,8 @@ public class ReportService {
 
         addSectionHeading(document, "Payment summary by member");
 
-        int[] widths = {1700, 3000, 1600, 3060};
-        String[] headings = {"Member ID", "Member name", "Deliveries", "Amount (MUR)"};
+        int[] widths = {1400, 2500, 1200, 2000, 2260};
+        String[] headings = {"Member ID", "Member name", "Deliveries", "Commission (MUR)", "Net payable (MUR)"};
         XWPFTable table = document.createTable(1, headings.length);
         table.setStyleID("TableGrid");
         table.setTableAlignment(TableRowAlign.LEFT);
@@ -272,16 +305,29 @@ public class ReportService {
             writeCell(row.getCell(0), member.getId(), false, ParagraphAlignment.LEFT, widths[0]);
             writeCell(row.getCell(1), member.getName(), false, ParagraphAlignment.LEFT, widths[1]);
             writeCell(row.getCell(2), String.valueOf(deliveries.size()), false, ParagraphAlignment.CENTER, widths[2]);
-            writeCell(row.getCell(3), String.format("%.2f", getMemberTotal(deliveries)), false,
+            writeCell(row.getCell(3), String.format("%.2f", getTotalCommission(deliveries)), false,
                     ParagraphAlignment.RIGHT, widths[3]);
+            writeCell(row.getCell(4), String.format("%.2f", getMemberTotal(deliveries)), false,
+                    ParagraphAlignment.RIGHT, widths[4]);
         }
 
         addSectionHeading(document, "Produce summary");
         addProduceSummary(document, season.getDeliveries());
 
+        XWPFParagraph seasonCommission = document.createParagraph();
+        seasonCommission.setAlignment(ParagraphAlignment.RIGHT);
+        seasonCommission.setSpacingBefore(240);
+        seasonCommission.setSpacingAfter(60);
+        XWPFRun seasonCommissionRun = seasonCommission.createRun();
+        seasonCommissionRun.setText(String.format("TOTAL SEASON COMMISSION (5%%): %.2f MUR",
+                getTotalCommission(season.getDeliveries())));
+        seasonCommissionRun.setBold(true);
+        seasonCommissionRun.setFontFamily("Calibri");
+        seasonCommissionRun.setFontSize(11);
+
         XWPFParagraph closingTotal = document.createParagraph();
         closingTotal.setAlignment(ParagraphAlignment.RIGHT);
-        closingTotal.setSpacingBefore(240);
+        closingTotal.setSpacingBefore(60);
         XWPFRun closingTotalRun = closingTotal.createRun();
         closingTotalRun.setText(String.format("TOTAL SEASON PAYOUT: %.2f MUR", season.getSeasonTotal()));
         closingTotalRun.setBold(true);
@@ -293,7 +339,8 @@ public class ReportService {
         note.setSpacingBefore(180);
         note.setSpacingAfter(0);
         XWPFRun noteRun = note.createRun();
-        noteRun.setText("This total is the sum of all member payments shown in this report.");
+        noteRun.setText("Commission is 5% of the graded category value for accepted deliveries. "
+                + "Rejected deliveries have no commission.");
         noteRun.setItalic(true);
         noteRun.setColor("666666");
         noteRun.setFontFamily("Calibri");

@@ -26,9 +26,16 @@ public class Deliveries implements Payable, Reportable {
             return 0.00;
         }
         double categoryValue = produce.baseValue() * grade.getMultiplier() * produce.categoryMultiplier();
-        double commission = categoryValue * 0.05;
         double transportLevy = produce.getMassKg() * 2;
-        return categoryValue - commission - transportLevy;
+        return categoryValue - getCommission() - transportLevy;
+    }
+
+    public double getCommission() {
+        if (grade == Grade.REJECT) {
+            return 0.00;
+        }
+        double categoryValue = produce.baseValue() * grade.getMultiplier() * produce.categoryMultiplier();
+        return categoryValue * 0.05;
     }
 
     @Override
