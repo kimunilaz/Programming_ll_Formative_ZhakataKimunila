@@ -25,17 +25,14 @@ public class Deliveries implements Payable, Reportable {
         if (grade == Grade.REJECT) {
             return 0.00;
         }
-        double categoryValue = produce.baseValue() * grade.getMultiplier() * produce.categoryMultiplier();
-        double transportLevy = produce.getMassKg() * 2;
-        return categoryValue - getCommission() - transportLevy;
+        return getCategoryValue() - getCommission() - getTransportLevy();
     }
 
     public double getCommission() {
         if (grade == Grade.REJECT) {
             return 0.00;
         }
-        double categoryValue = produce.baseValue() * grade.getMultiplier() * produce.categoryMultiplier();
-        return categoryValue * 0.05;
+        return getCategoryValue() * 0.05;
     }
 
     @Override
@@ -71,7 +68,17 @@ public class Deliveries implements Payable, Reportable {
     public double getMassKg() { return produce.getMassKg(); }
     public int getQualityScore() { return produce.getQualityScore(); }
     public double getUnitPrice() { return produce.getUnitPrice(); }
+    public double getBaseValue() { return produce.baseValue(); }
+    public double getGradeMultiplier() { return grade.getMultiplier(); }
+    public double getGradedValue() { return getBaseValue() * getGradeMultiplier(); }
     public double getCategoryMultiplier() { return produce.categoryMultiplier(); }
+    public double getCategoryValue() { return getGradedValue() * getCategoryMultiplier(); }
+    public double getTransportLevy() {
+        if (grade == Grade.REJECT) {
+            return 0.00;
+        }
+        return produce.getMassKg() * 2;
+    }
     public String getGrade() { return grade.toString(); }
     public double getNetPayable() { return netPayable(); }
     public int getWeek() { return week; }

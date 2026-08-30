@@ -32,8 +32,34 @@ public class SeasonService {
         memberIds.add(member_Id);
         members.putIfAbsent(member_Id, new Member(member_Id, memberName));
 
-        System.out.printf("Delivery %s recorded. Grade %s%n", deliveryId, grade);
-        System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
+        printDeliveryBreakdown(delivery);
+    }
+
+    private void printDeliveryBreakdown(Deliveries delivery) {
+        String massText;
+        if (delivery.getMassKg() == (long) delivery.getMassKg()) {
+            massText = String.format("%.0f", delivery.getMassKg());
+        } else {
+            massText = String.valueOf(delivery.getMassKg());
+        }
+
+        System.out.printf("Delivery %s recorded. Grade %s%n", delivery.getId(), delivery.getGrade());
+        printCalculationLine("Base value", massText + " x " + String.format("%.2f", delivery.getUnitPrice()),
+                "=", delivery.getBaseValue());
+        printCalculationLine("Grade " + delivery.getGrade(), "x " + String.format("%.2f", delivery.getGradeMultiplier()),
+                "=", delivery.getGradedValue());
+        printCalculationLine(delivery.getProduceCategory(),
+                "x " + String.format("%.2f", delivery.getCategoryMultiplier()),
+                "=", delivery.getCategoryValue());
+        printCalculationLine("Commission 5%", "", "-", delivery.getCommission());
+        printCalculationLine("Transport levy", massText + " x 2.00", "-", delivery.getTransportLevy());
+        System.out.printf("    %-20s %-18s = %,12.2f MUR%n",
+                "NET PAYABLE", "", delivery.getNetPayable());
+    }
+
+    private void printCalculationLine(String label, String calculation, String symbol, double amount) {
+        System.out.printf("    %-20s %-18s %s %,12.2f%n",
+                label, calculation, symbol, amount);
     }
 
     private int produceColumnIndex(String produceCode) {
