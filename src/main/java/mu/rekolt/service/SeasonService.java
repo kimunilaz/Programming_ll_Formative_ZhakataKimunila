@@ -13,11 +13,11 @@ public class SeasonService {
 
 
 
-    public void addDelivery(String member_Id, String produceCode, double massKg, int score, int week) {
+    public void addDelivery(String member_Id, String memberName, String produceCode, double massKg, int score, int week) {
         Grade grade = Grade.fromScore(score);
         String deliveryId = "D-" + (1000 + deliveries.size() + 1);
         Deliveries delivery = new Deliveries(
-                deliveryId, member_Id, produceCode, massKg, score, week);
+                deliveryId, member_Id, memberName, produceCode, massKg, score, week);
         double netPayable = delivery.netPayable();
 
 
@@ -30,7 +30,7 @@ public class SeasonService {
         deliveriesByMember.put(member_Id, md);
 
         memberIds.add(member_Id);
-        members.putIfAbsent(member_Id, new Member(member_Id));
+        members.putIfAbsent(member_Id, new Member(member_Id, memberName));
 
         System.out.printf("Delivery %s recorded. Grade %s%n", deliveryId, grade);
         System.out.printf("NET PAYABLE = %.2f MUR%n", netPayable);
@@ -49,7 +49,7 @@ public class SeasonService {
     public void printMemberTotals() {
         System.out.println("Total payment per member (MUR)");
         for (String id : memberTotals.keySet()) {
-            System.out.printf("%s   %.2f%n", id, memberTotals.get(id));
+            System.out.printf("%s   %s   %.2f%n", id, members.get(id).getName(), memberTotals.get(id));
         }
     }
 

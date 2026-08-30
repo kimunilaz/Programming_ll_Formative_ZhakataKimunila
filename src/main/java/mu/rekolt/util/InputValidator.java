@@ -46,6 +46,19 @@ public class InputValidator {
         return memberId;
     }
 
+    public static String promptMemberName() {
+        String memberName = "";
+        while (memberName.isEmpty()) {
+            System.out.print("Member name : ");
+            Scanner input = new Scanner(System.in);
+            memberName = input.nextLine().trim();
+            if (memberName.isEmpty()) {
+                System.out.println("Member name cannot be empty. Please try again.");
+            }
+        }
+        return memberName;
+    }
+
     public static int Week() {
         int week = 0;
         boolean validWeek = false;

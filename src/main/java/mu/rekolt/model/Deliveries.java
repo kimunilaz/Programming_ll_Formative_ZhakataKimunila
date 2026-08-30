@@ -4,14 +4,16 @@ package mu.rekolt.model;
 public class Deliveries implements Payable, Reportable {
     private String id;
     private String member_Id;
+    private String memberName;
     private Produce produce;
     private int week;
     private Grade grade;
 
-    public Deliveries(String id, String member_Id, String productCode,
+    public Deliveries(String id, String member_Id, String memberName, String productCode,
                       double massKg, int score, int week) {
         this.id = id;
         this.member_Id = member_Id;
+        this.memberName = memberName;
         this.produce = Produce.create(productCode, massKg, score);
         this.grade = Grade.fromScore(score);
         this.week = week;
@@ -31,7 +33,7 @@ public class Deliveries implements Payable, Reportable {
 
     @Override
     public String toReportRow() {
-        return id + "  " + member_Id + "  " + produce.getCode() + "  " +
+        return id + "  " + member_Id + "  " + memberName + "  " + produce.getCode() + "  " +
                 String.format("%.1f kg", produce.getMassKg()) + "  " +
                 grade + "  " + String.format("%.2f", netPayable());
     }
@@ -56,7 +58,7 @@ public class Deliveries implements Payable, Reportable {
 
     public String getId() { return id; }
     public String getMemberId() { return member_Id; }
-   // public String getMemberName() { return memberName; }
+    public String getMemberName() { return memberName; }
     public String getProduceCode() { return produce.getCode(); }
     public double getMassKg() { return produce.getMassKg(); }
     public String getGrade() { return grade.toString(); }

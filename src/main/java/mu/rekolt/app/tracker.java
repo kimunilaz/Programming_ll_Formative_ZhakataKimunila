@@ -144,12 +144,12 @@ public class tracker {
             switch (choice) {
                 case "1":
                     String member_Id = InputValidator.MemberId();
-                    //String memberName = InputValidator.promptMemberName();
+                    String memberName = InputValidator.promptMemberName();
                     String produceCode = InputValidator.Product_Code();
                     double massKg = InputValidator.promptMass();
                     int qualityScore = InputValidator.Score();
                     int week = InputValidator.Week();
-                    season.addDelivery(member_Id, produceCode, massKg, qualityScore, week);
+                    season.addDelivery(member_Id, memberName, produceCode, massKg, qualityScore, week);
 
                     break;
 

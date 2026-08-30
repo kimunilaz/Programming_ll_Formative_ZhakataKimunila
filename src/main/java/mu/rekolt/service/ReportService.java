@@ -32,7 +32,7 @@ public class ReportService {
 
                 XWPFParagraph heading = document.createParagraph();
                 XWPFRun headingRun = heading.createRun();
-                headingRun.setText("Payment Statement — " + member.getId());
+                headingRun.setText("Payment Statement — " + member.getId() + "  " + member.getName());
                 headingRun.setBold(true);
                 headingRun.setFontSize(14);
 
