@@ -123,4 +123,16 @@ public class SeasonService {
     }
 
     public List<Deliveries> getDeliveries() { return deliveries; }
+
+    public List<Deliveries> getDeliveriesForMember(String memberId) {
+        return deliveriesByMember.getOrDefault(memberId, new ArrayList<>());
+    }
+
+    public double getSeasonTotal() {
+        double total = 0;
+        for (double value : memberTotals.values()) {
+            total += value;
+        }
+        return total;
+    }
 }
